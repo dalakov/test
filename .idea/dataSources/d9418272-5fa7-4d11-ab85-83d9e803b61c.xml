@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="jdbc:hsqldb:hsql://localhost/dev">
+  <database-model serializer="dbm" rdbms="HSQLDB" format-version="4.3">
+    <root id="1"/>
+    <database id="2" parent="1" name="PUBLIC">
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </database>
+    <schema id="3" parent="2" name="INFORMATION_SCHEMA"/>
+    <schema id="4" parent="2" name="PUBLIC">
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </schema>
+    <schema id="5" parent="2" name="SYSTEM_LOBS"/>
+    <table id="6" parent="4" name="APPROLE"/>
+    <table id="7" parent="4" name="APPUSER"/>
+    <table id="8" parent="4" name="HIBERNATE_SEQUENCES"/>
+    <table id="9" parent="4" name="USERROLE"/>
+    <column id="10" parent="6" name="ID">
+      <Position>1</Position>
+      <DataType>BIGINT(64)|-5</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="11" parent="6" name="ROLENAME">
+      <Position>2</Position>
+      <DataType>VARCHAR(255)|12</DataType>
+    </column>
+    <key id="12" parent="6" name="SYS_PK_10092">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>ID</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="13" parent="7" name="ID">
+      <Position>1</Position>
+      <DataType>BIGINT(64)|-5</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="14" parent="7" name="ENABLED">
+      <Position>2</Position>
+      <DataType>BOOLEAN(0)|16</DataType>
+    </column>
+    <column id="15" parent="7" name="PASSWORD">
+      <Position>3</Position>
+      <DataType>VARCHAR(255)|12</DataType>
+    </column>
+    <column id="16" parent="7" name="USERNAME">
+      <Position>4</Position>
+      <DataType>VARCHAR(255)|12</DataType>
+    </column>
+    <key id="17" parent="7" name="SYS_PK_10096">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>ID</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="18" parent="8" name="SEQUENCE_NAME">
+      <Position>1</Position>
+      <DataType>VARCHAR(255)|12</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="19" parent="8" name="NEXT_VAL">
+      <Position>2</Position>
+      <DataType>BIGINT(64)|-5</DataType>
+    </column>
+    <key id="20" parent="8" name="SYS_PK_10110">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>SEQUENCE_NAME</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="21" parent="9" name="APPUSER_ID">
+      <Position>1</Position>
+      <DataType>BIGINT(64)|-5</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="22" parent="9" name="APPROLE_ID">
+      <Position>2</Position>
+      <DataType>BIGINT(64)|-5</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="23" parent="9" name="SYS_PK_10101">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>APPUSER_ID
+APPROLE_ID</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="24" parent="9" name="FKMAVM7R3XY49QT55PS9RKISPX2">
+      <ColNames>APPUSER_ID</ColNames>
+      <RefSchemaName>PUBLIC</RefSchemaName>
+      <RefTableName>APPUSER</RefTableName>
+      <RefKeyName>SYS_PK_10096</RefKeyName>
+      <RefColNames>ID</RefColNames>
+    </foreign-key>
+    <foreign-key id="25" parent="9" name="FKDB20211FWSGB2K5RBGTO3M88H">
+      <ColNames>APPROLE_ID</ColNames>
+      <RefSchemaName>PUBLIC</RefSchemaName>
+      <RefTableName>APPROLE</RefTableName>
+      <RefKeyName>SYS_PK_10092</RefKeyName>
+      <RefColNames>ID</RefColNames>
+    </foreign-key>
+  </database-model>
+</dataSource>
