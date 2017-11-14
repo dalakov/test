@@ -6,11 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="jpaspringtest" />
+        <module name="jpaspring" />
+        <module name="kafka" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="jpaspringtest" target="1.5" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="jpaspring" target="1.5" />
+      <module name="kafka" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
