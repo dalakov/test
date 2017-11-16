@@ -72,12 +72,18 @@ public class KafkaTest {
     private static final String NAME_NODE = "hdfs://localhost:8020";//nameNomeHost = localhost if you use hadoop in local mode
     private static final Logger logger = Logger.getLogger("kafka.KafkaTest");
 
+    static String getMessage(int len) {
+        String s="";
+        for (int i=0; i<len; i++) s=s+"0";
+        return s;
+    }
+
     public static void main(String[] args) throws URISyntaxException, IOException {
 
         String hdfsuri = NAME_NODE;
         String path="/user/hdfs/example/hdfs/";
         String fileName="hello.csv";
-        String fileContent="hello;world";
+        String fileContent=getMessage(1000);
 
         // ====== Init HDFS File System Object
         Configuration conf = new Configuration();
@@ -87,7 +93,7 @@ public class KafkaTest {
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
         // Set HADOOP user
-        System.setProperty("HADOOP_USER_NAME", "hdfs");
+        System.setProperty("HADOOP_USER_NAME", "root");
         System.setProperty("hadoop.home.dir", "/");
         //Get the filesystem - HDFS
         FileSystem fs = FileSystem.get(URI.create(hdfsuri), conf);
@@ -104,11 +110,18 @@ public class KafkaTest {
         //==== Write file
         logger.info("Begin Write file into hdfs");
         //Create a path
-        Path hdfswritepath = new Path(newFolderPath + "/" + fileName);
+        Path hdfswritepath = new Path(newFolderPath + "/" + "queue"+fileName);
         //Init output stream
         FSDataOutputStream outputStream=fs.create(hdfswritepath);
-        //Cassical output stream usage
-        outputStream.writeBytes(fileContent);
+
+        long start = System.currentTimeMillis();
+        for (int i=0; i<100000; i++) {
+            //Cassical output stream usage
+            outputStream.writeBytes(fileContent);
+        }
+        long timeSpent = System.currentTimeMillis() - start;
+        System.out.println(" timeSpent " + timeSpent + " ms ------------------------");
+
         outputStream.close();
         logger.info("End Write file into hdfs");
 
@@ -125,7 +138,7 @@ public class KafkaTest {
         fs.close();
 
     }
-
-
-
 }
+
+//docker network create sandbox-cluster
+//docker-compose -p hadoop-cluster up -d
