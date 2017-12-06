@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+">
+    
+    <!--mvc:view-controller path="/" view-name="welcome.jsp" /-->
+    <context:annotation-config />
+    <context:component-scan base-package="auth2.*" />
+    <mvc:annotation-driven />
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/" />
+    
+    <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+           
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+        <property name = "prefix" value="/WEB-INF/jsp/" />
+        <property name = "suffix" value=".jsp" />
+    </bean> 
+       
+    <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore" />
+        
+    <bean id="requestFactory" class="org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory">
+            <constructor-arg name="clientDetailsService" ref="clientDetails" />
+    </bean>
+
+    <bean id="approvalStore" class="org.springframework.security.oauth2.provider.approval.TokenApprovalStore">
+        <property name="tokenStore" ref="tokenStore" />
+    </bean>
+       
+    <bean id="userApprovalHandler" class="auth2.authentication.CustomUserApprovHandler">
+        <property name="approvalStore" ref="approvalStore" />
+        <property name="clientDetailsService" ref="clientDetails" />
+        <property name="requestFactory" ref="requestFactory" />
+    </bean>
+        
+    <bean id="mainController" class="auth2.controllers.MainController">
+        <property name="userApprovalHandler" ref="userApprovalHandler" />
+    </bean>
+
+    <bean id="accessConfirmController" class="auth2.controllers.AccessConfirmController">
+        <property name="clientDetailsService" ref="clientDetails" />
+        <property name="approvalStore" ref="approvalStore" />
+    </bean>
+
+</beans>  

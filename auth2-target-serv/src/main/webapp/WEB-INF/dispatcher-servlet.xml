@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<beans 
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:sec="http://www.springframework.org/schema/security"
+    xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+        http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
+">
+    
+    <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+
+    <bean id="viewResolver"
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+        p:prefix="/WEB-INF/jsp/"
+        p:suffix=".jsp" />
+    
+    <!--apply the oauth client context -->
+    <oauth:client id="oauth2ClientFilter" />
+
+    <oauth:resource id="auth2serv" type="authorization_code"
+                        client-id="target" client-secret="secret" access-token-uri="http://localhost:8080/auth2serv/oauth/token"
+                        user-authorization-uri="http://localhost:8080/auth2serv/oauth/authorize" scope="read,write" />
+
+    <!--define an oauth 2 resource for client with registered redirect on auth2serv -->
+    <oauth:resource id="auth2servRedirect" type="authorization_code"
+                        client-id="target-with-redirect" access-token-uri="http://localhost:8080/auth2serv/oauth/token"
+                        user-authorization-uri="$http://localhost:8080/auth2serv/oauth/authorize" scope="read,write"
+                        client-secret="secret" use-current-uri="false" />
+    
+    <bean id="authenticationController"
+              class="auth2.target.controllers.AuthenticationController">
+        <property name="authenticationService" ref="authenticationService" />
+    </bean>
+
+    <bean id="authenticationService" class="auth2.target.services.AuthenticationServiceImpl">
+        <property name="authURL" value="http://localhost:8080/auth2serv/data?format=xml" />
+        <property name="restTemplate">
+            <oauth:rest-template resource="auth2serv" />
+        </property>
+    </bean>
+    
+    <context:annotation-config/>
+    <context:component-scan base-package="auth2.target.*" />
+    <mvc:annotation-driven /> 
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/" />
+    
+</beans>

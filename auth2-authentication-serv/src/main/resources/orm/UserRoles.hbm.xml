@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class catalog="public" name="auth2.users.model.UserRole" table="user_roles">
+    <id name="userRoleId" type="java.lang.Integer">
+      <column name="user_role_id"/>
+      <generator class="identity"/>
+    </id>
+    <many-to-one class="auth2.users.model.User" fetch="select" name="user">
+      <column length="45" name="username" not-null="true"/>
+    </many-to-one>
+    <property name="role" type="string">
+      <column length="45" name="role" not-null="true"/>
+    </property>
+  </class>
+</hibernate-mapping>

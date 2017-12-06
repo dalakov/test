@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class catalog="public" name="auth2.users.model.User" table="users">
+    <id name="username" type="string">
+      <column length="45" name="username"/>
+      <generator class="assigned"/>
+    </id>
+    <property name="password" type="string">
+      <column length="60" name="password" not-null="true"/>
+    </property>
+    <property name="enabled" type="boolean">
+      <column name="enabled" not-null="true"/>
+    </property>
+    <set fetch="select" inverse="true" lazy="true" name="userRole" table="user_roles">
+      <key>
+        <column length="45" name="username" not-null="true"/>
+      </key>
+      <one-to-many class="auth2.users.model.UserRole"/>
+    </set>
+  </class>
+</hibernate-mapping>

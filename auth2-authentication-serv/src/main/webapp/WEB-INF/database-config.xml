@@ -1,0 +1,68 @@
+<beans  
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+">
+
+    <jdbc:embedded-database id="testdb" type="HSQL">
+	<jdbc:script location="classpath:db/sql/create-db.sql" />
+	<jdbc:script location="classpath:db/sql/insert-data.sql" />
+    </jdbc:embedded-database>   
+    
+    <bean id="dbcpDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+	<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+	<property name="url" value="jdbc:hsqldb:mem:testdb" />
+	<property name="username" value="sa" />
+	<property name="password" value="" />
+    </bean>
+        
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<property name="dataSource" ref="dbcpDataSource" />
+	<property name="mappingResources">
+            <list>
+                <value>orm/Users.hbm.xml</value>
+                <value>orm/UserRoles.hbm.xml</value>
+            </list>
+	</property>
+	<property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+		<prop key="hibernate.format_sql">true</prop>
+		<prop key="hibernate.show_sql">true</prop>
+            </props>
+	</property>
+    </bean>
+
+    <bean id="userDao" class="auth2.users.dao.UserDaoImpl">
+	<property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <bean id="customUserDetailsService" class="auth2.services.CustomUserDetailsService">
+	<property name="userDao" ref="userDao" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	<property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+	<tx:attributes>
+            <tx:method name="get*" read-only="true" />
+            <tx:method name="find*" read-only="true" />
+            <tx:method name="*" />
+            </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+	<aop:pointcut id="userServicePointCut" expression="execution(* auth2.services.*Service.*(..))" />
+	<aop:advisor advice-ref="txAdvice" pointcut-ref="userServicePointCut" />
+    </aop:config>
+
+</beans>
