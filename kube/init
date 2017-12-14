@@ -1,0 +1,23 @@
+docker ps -a
+export KUBECONFIG=/etc/kubernetes/admin.conf
+swapoff -a
+systemctl daemon-reload
+systemctl restart kubelet
+kubeadm init --pod-network-cidr=192.168.0.0/16 --skip-preflight-checks
+kubectl get pods --all-namespaces
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+kubectl apply -f calico.yaml
+kubectl get pods --all-namespaces
+
+#kubectl apply -f dashboard.yml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+kubectl get pods --all-namespaces
+
+kubectl create -f serv-acc.yaml
+kubectl create -f cl-role-bind.yaml
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+
+kubectl apply --namespace kube-system -f "https://cloud.weave.works/k8s/scope.yaml?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl port-forward -n kube-system "$(kubectl get -n kube-system pod --selector=weave-scope-component=app -o jsonpath='{.items..metadata.name}')" 4040
+
