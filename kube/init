@@ -1,10 +1,10 @@
-docker ps -a
-export KUBECONFIG=/etc/kubernetes/admin.conf
-swapoff -a
-systemctl daemon-reload
-systemctl restart kubelet
-kubeadm init --pod-network-cidr=192.168.0.0/16 --skip-preflight-checks
-kubectl get pods --all-namespaces
+docker ps -a &&
+export KUBECONFIG=/etc/kubernetes/admin.conf &&
+swapoff -a &&
+systemctl daemon-reload &&
+systemctl restart kubelet &&
+kubeadm init --pod-network-cidr=192.168.0.0/16 --skip-preflight-checks &&
+kubectl get pods --all-namespaces &&
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
 kubectl apply -f calico.yaml
@@ -23,3 +23,27 @@ kubectl port-forward -n kube-system "$(kubectl get -n kube-system pod --selector
 
 #https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-debian-8
 #https://medium.com/@gokulc/setting-up-nginx-ingress-on-kubernetes-2b733d8d2f45
+
+tee 1 <<EOF
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kube-system
+EOF
+
+http://localhost:8001/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/
+
+kubectl label node debian beta.kubernetes.io/fluentd-ds-ready=true
+kubectl describe ds fluentd-es-v2.0.2 --namespace=kube-system
+http://127.0.0.1:8001/api/v1/proxy/namespaces/kube-system/services/kibana-logging/app/kibana#/management/kibana/index?_g=()
+@timestamp
