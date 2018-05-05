@@ -1,0 +1,29 @@
+version: '2'
+services:
+    hiptest-app:
+        image: hiptest
+        environment:
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://hiptest-postgresql:5432/hiptest
+            - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
+    hiptest-postgresql:
+        extends:
+            file: postgresql.yml
+            service: hiptest-postgresql
+    lb:
+        image: dockercloud/haproxy
+        environment:
+            - CERT_FOLDER=/certs/
+            - CA_CERT_FILE=/cacerts/cert0.pem
+        links:
+            - hiptest-app
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /sda1/work/ideaproj/hiptest/certs:/certs/
+            - /sda1/work/ideaproj/hiptest/cacerts:/cacerts/
+        ports:
+            - 8080:443
+            - 1936:1936
+
+https://gist.github.com/mtigas/952344
+https://github.com/docker/dockercloud-haproxy/tree/master#ssl-termination#
