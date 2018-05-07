@@ -1,0 +1,3 @@
+n debian the directory is /usr/local/share/ca-certificates/ and the command to update is update-ca-certificates
+https://gist.github.com/kekru/deabd57f0605ed95d5c8246d18483687
+
